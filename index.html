@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <style>
+        :root {
+            --primary-color: #2a2a2a;
+            --secondary-color: #00bcd4;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .task-form {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: var(--text-color);
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .task-list {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .task-item {
+            background: #333;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-info {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .hero-section {
+            text-align: center;
+            padding: 10px 0;
+            background: linear-gradient(135deg, #05a1b6, #006816a2);
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero-section">
+        <div class="logo-placeholder">
+            <img src="logo.png" alt="Your Logo Here" height="70">
+        </div>
+  
+        <h2>Welcome to the Dynamic Task Manager</h2>
+        <p>Stay organized and accomplish your tasks with our stylish Task Manager.</p>
+    </div>
+
+    <div class="task-form">
+        <h2>Add New Task</h2>
+        <div class="input-group">
+            <input type="text" id="taskName" placeholder="Task name">
+        </div>
+        <div class="input-group">
+            <textarea id="taskDescription" placeholder="Task description"></textarea>
+        </div>
+        <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <div class="task-list">
+        <h2>Task List</h2>
+        <div id="tasksContainer"></div>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function addTask() {
+            const nameInput = document.getElementById('taskName');
+            const descInput = document.getElementById('taskDescription');
+            
+            if (!nameInput.value.trim()) return;
+
+            const newTask = {
+                id: Date.now(),
+                name: nameInput.value.trim(),
+                description: descInput.value.trim(),
+                completed: false
+            };
+
+            tasks.push(newTask);
+            saveTasks();
+            renderTasks();
+            
+            nameInput.value = '';
+            descInput.value = '';
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(task => 
+                task.id === id ? {...task, completed: !task.completed} : task
+            );
+            saveTasks();
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(task => task.id !== id);
+            saveTasks();
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasksContainer');
+            container.innerHTML = '';
+
+            tasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = `task-item ${task.completed ? 'completed' : ''}`;
+                taskElement.innerHTML = `
+                    <div class="task-info">
+                        <h3>${task.name}</h3>
+                        <p>${task.description}</p>
+                        <small>ID: ${task.id}</small>
+                    </div>
+                    <div class="task-actions">
+                        <button onclick="toggleTask(${task.id})">
+                            ${task.completed ? 'Undo' : 'Complete'}
+                        </button>
+                        <button onclick="deleteTask(${task.id})">Delete</button>
+                    </div>
+                `;
+                container.appendChild(taskElement);
+            });
+        }
+
+        renderTasks();
+    </script>
+</body>
+</html>
