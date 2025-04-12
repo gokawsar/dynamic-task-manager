@@ -7,7 +7,7 @@ A modern task management system built with **HTML**, **CSS**, and **JavaScript**
 
 **Live Demo**: [https://dynamic-task-manager.vercel.app](https://dynamic-task-manager.vercel.app)
 
-![image](https://github.com/user-attachments/assets/9e2a7703-82b0-41dc-845d-d75423aff0ff)
+![image](https://github.com/user-attachments/assets/ab0b5e38-32fc-40ea-9352-8131a4767703)
 
 ---
 
@@ -67,12 +67,12 @@ git clone https://github.com/gokawsar/Dynamic-Task-Manager.git
 ### Course Instructor
 | **Name**            | **Designation**      |
 |---------------------|----------------------|
-| Md. Naimul Pathan   | Assistant Professor  |
+| Md. Naimul Pathan   | Lecturer, CSE, GUB  |
 
 ---
 
 ## Acknowledgments 🙏
-- Developed as part of the **Web Programming Lab (CSE 302)** curriculum
+- Developed as part of the **GUB - CSE - Web Programming Lab (CSE 302)** curriculum
 - Special thanks to **Md. Naimul Pathan** for project guidance
 - Inspired by modern productivity tools like Todoist and Notion
 
@@ -85,5 +85,3 @@ This project is licensed under the [MIT License](LICENSE).
 
 © 2025 [MD KAWSAR AHMED](https://github.com/gokawsar) | Green University of Bangladesh
 ```
-
-`task-manager-preview.png`
