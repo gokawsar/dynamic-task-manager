@@ -7,7 +7,7 @@ A modern task management system built with **HTML**, **CSS**, and **JavaScript**
 
 **Live Demo**: [https://dynamic-task-manager.vercel.app](https://dynamic-task-manager.vercel.app)
 
-![Task Manager Preview](https://i.ibb.co/3T1kL6H/task-manager-preview.png)
+![image](https://github.com/user-attachments/assets/9e2a7703-82b0-41dc-845d-d75423aff0ff)
 
 ---
 
