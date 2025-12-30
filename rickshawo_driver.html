@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rickshawo - Driver Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2196F3;
+            --primary-dark: #1976D2;
+            --success: #4CAF50;
+            --danger: #F44336;
+            --warning: #FF9800;
+            --bg-light: #F5F5F5;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            border-radius: 40px;
+            border: 12px solid #000;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            background: #fff;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 28px;
+            background: #000;
+            border-radius: 0 0 30px 30px;
+            z-index: 100;
+        }
+
+        .phone-content {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding-top: 30px;
+            background: var(--bg-light);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 20px 15px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .screen {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .screen-header {
+            background: var(--bg-card);
+            padding: 15px;
+            margin: -20px -20px 20px -20px;
+            border-bottom: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .screen-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .screen-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .status-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .status-info {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .request-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .request-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+        }
+
+        .request-item.accepted {
+            border-color: var(--success);
+            background: rgba(76, 175, 80, 0.05);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .passenger-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .request-fare {
+            background: var(--success);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .request-details {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .request-route {
+            background: var(--bg-light);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .route-label {
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .route-text {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-accept {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-accept:hover {
+            background: #45a049;
+        }
+
+        .btn-reject {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #da190b;
+        }
+
+        .shift-status {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--success);
+        }
+
+        .shift-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .shift-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .shift-time {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .shift-vehicle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .earnings-breakdown {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .earning-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .earning-row:last-child {
+            border-bottom: none;
+        }
+
+        .earning-label {
+            color: var(--text-secondary);
+        }
+
+        .earning-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .earning-total {
+            border-top: 2px solid var(--primary);
+            padding-top: 10px;
+            margin-top: 10px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .scrollable {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="phone-content">
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab(0)">Requests</button>
+                <button class="tab-btn" onclick="switchTab(1)">Shift</button>
+                <button class="tab-btn" onclick="switchTab(2)">Earnings</button>
+            </div>
+
+            <!-- Screen 1: Ride Requests -->
+            <div class="screen active" id="screen-0">
+                <div class="screen-header">
+                    <div class="screen-title">Ride Requests</div>
+                    <div class="screen-subtitle">Accept or reject incoming requests</div>
+                </div>
+
+                <div class="status-card">
+                    <div class="status-label">Currently Online</div>
+                    <div class="status-value">3</div>
+                    <div class="status-info">Waiting requests • 2 mins average</div>
+                </div>
+
+                <div class="scrollable">
+                    <div class="request-item">
+                        <div class="request-header">
+                            <div class="passenger-name">Ayesha Khan</div>
+                            <div class="request-fare">৳ 85</div>
+                        </div>
+                        <div class="request-details">
+                            <span>📍 0.6 km</span>
+                            <span>⏱ 2 mins</span>
+                        </div>
+                        <div class="request-route">
+                            <div class="route-label">From</div>
+                            <div class="route-text">Dhanmondi Lake Area</div>
+                            <div class="route-label" style="margin-top: 5px;">To</div>
+                            <div class="route-text">Mirpur 10</div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-accept" onclick="acceptRequest(0)">Accept</button>
+                            <button class="btn btn-reject">Reject</button>
+                        </div>
+                    </div>
+
+                    <div class="request-item accepted">
+                        <div class="request-header">
+                            <div class="passenger-name">Rahul Das (Accepted)</div>
+                            <div class="request-fare">৳ 92</div>
+                        </div>
+                        <div class="request-details">
+                            <span>📍 0.3 km</span>
+                            <span>⏱ 1 min</span>
+                        </div>
+                        <div class="request-route">
+                            <div class="route-label">From</div>
+                            <div class="route-text">Gulshan Avenue</div>
+                            <div class="route-label" style="margin-top: 5px;">To</div>
+                            <div class="route-text">Banani Park</div>
+                        </div>
+                        <button class="btn btn-accept" style="width: 100%; margin-top: 10px;">Pick Up in Progress</button>
+                    </div>
+
+                    <div class="request-item">
+                        <div class="request-header">
+                            <div class="passenger-name">Noor Hasan</div>
+                            <div class="request-fare">৳ 76</div>
+                        </div>
+                        <div class="request-details">
+                            <span>📍 0.8 km</span>
+                            <span>⏱ 3 mins</span>
+                        </div>
+                        <div class="request-route">
+                            <div class="route-label">From</div>
+                            <div class="route-text">Baridhara</div>
+                            <div class="route-label" style="margin-top: 5px;">To</div>
+                            <div class="route-text">Farmgate</div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-accept">Accept</button>
+                            <button class="btn btn-reject">Reject</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 2: Shift Status -->
+            <div class="screen" id="screen-1">
+                <div class="screen-header">
+                    <div class="screen-title">Shift Management</div>
+                    <div class="screen-subtitle">Monitor your daily shift</div>
+                </div>
+
+                <div class="status-card">
+                    <div class="status-label">Shift Status</div>
+                    <div class="status-value">ACTIVE</div>
+                    <div class="status-info">✓ Shift started at 06:00 AM</div>
+                </div>
+
+                <div class="shift-status">
+                    <div class="shift-label">Current Assignment</div>
+                    <div class="shift-info">
+                        <div>
+                            <div class="shift-time">Md. Hassan's Rickshaw</div>
+                            <div class="shift-vehicle">Vehicle ID: RH-2024-5412</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                        🛢️ Fuel: Full Tank | 🔧 Condition: Good
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value">6h 45m</div>
+                        <div class="stat-label">Duration</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Trips Completed</div>
+                    </div>
+                </div>
+
+                <div class="earnings-breakdown">
+                    <div class="earning-row">
+                        <span class="earning-label">Rides Today</span>
+                        <span class="earning-value">12</span>
+                    </div>
+                    <div class="earning-row">
+                        <span class="earning-label">Distance Covered</span>
+                        <span class="earning-value">45.3 km</span>
+                    </div>
+                    <div class="earning-row">
+                        <span class="earning-label">Avg Rating Today</span>
+                        <span class="earning-value">4.8 ⭐</span>
+                    </div>
+                </div>
+
+                <button class="btn-primary">End Shift & Handover</button>
+                <button class="btn-secondary">Handover Logs</button>
+            </div>
+
+            <!-- Screen 3: Earnings -->
+            <div class="screen" id="screen-2">
+                <div class="screen-header">
+                    <div class="screen-title">Today's Earnings</div>
+                    <div class="screen-subtitle">View income breakdown</div>
+                </div>
+
+                <div class="status-card">
+                    <div class="status-label">Total Earnings</div>
+                    <div class="status-value">৳ 1,245</div>
+                    <div class="status-info">12 rides • 45.3 km covered</div>
+                </div>
+
+                <div class="earnings-breakdown">
+                    <div class="earning-row">
+                        <span class="earning-label">Gross Fare</span>
+                        <span class="earning-value">৳ 1,245</span>
+                    </div>
+                    <div class="earning-row">
+                        <span class="earning-label">Commission (15%)</span>
+                        <span class="earning-value">-৳ 187</span>
+                    </div>
+                    <div class="earning-row">
+                        <span class="earning-label">Bonus (No violations)</span>
+                        <span class="earning-value">+৳ 100</span>
+                    </div>
+                    <div class="earning-row earning-total">
+                        <span>Net Earnings</span>
+                        <span>৳ 1,158</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 14px; color: var(--text-primary);">Trip Breakdown</h3>
+
+                <div class="scrollable">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--success);">
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                            <span style="font-weight: 600;">Dhanmondi → Gulshan</span>
+                            <span style="color: var(--success); font-weight: 600;">৳ 114</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">09:15 AM • 3.2 km • 12 mins</div>
+                    </div>
+
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--success);">
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                            <span style="font-weight: 600;">Mirpur 10 → Farmgate</span>
+                            <span style="color: var(--success); font-weight: 600;">৳ 98</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">09:35 AM • 2.1 km • 9 mins</div>
+                    </div>
+
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 12px; margin-bottom: 10px; border-left: 4px solid var(--success);">
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                            <span style="font-weight: 600;">Banani → Motijheel</span>
+                            <span style="color: var(--success); font-weight: 600;">৳ 127</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">10:00 AM • 3.8 km • 14 mins</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(index) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(`screen-${index}`).classList.add('active');
+            document.querySelectorAll('.tab-btn')[index].classList.add('active');
+        }
+
+        function acceptRequest(index) {
+            alert('Ride request accepted! Heading to pickup location...');
+        }
+    </script>
+</body>
+</html>

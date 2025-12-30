@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rickshawo - Prototype Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1565C0;
+            --primary-dark: #0D47A1;
+            --accent-passenger: #1E88E5;
+            --accent-driver: #43A047;
+            --accent-garage: #EF6C00;
+            --accent-govt: #6A1B9A;
+            --bg-card: rgba(255, 255, 255, 0.08);
+            --bg-card-solid: rgba(255, 255, 255, 0.95);
+            --border-glass: rgba(255, 255, 255, 0.35);
+            --text-primary: #FFFFFF;
+            --text-secondary: #CFD8DC;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(circle at top left, #42A5F5 0%, #1565C0 30%, #0D47A1 70%, #000814 100%);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow-x: hidden;
+        }
+
+        .page-shell {
+            width: 100%;
+            max-width: 1220px;
+            background: radial-gradient(circle at top, rgba(255,255,255,0.12), rgba(13,71,161,0.9));
+            border-radius: 24px;
+            padding: 26px 26px 30px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(18px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 22px;
+            animation: fadeDown 0.7s ease-out;
+        }
+
+        .brand-block {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-logo {
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #FFCA28, #FF8F00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .brand-text-main {
+            font-weight: 800;
+            font-size: 24px;
+            letter-spacing: 0.04em;
+        }
+
+        .brand-text-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+            opacity: 0.95;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        .chip {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.18);
+        }
+
+        .chip--accent {
+            background: rgba(21, 101, 192, 0.3);
+            color: #E3F2FD;
+            border-color: rgba(227, 242, 253, 0.7);
+        }
+
+        .hero-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .hero-panel {
+            background: linear-gradient(135deg, rgba(13, 71, 161, 0.85), rgba(21, 101, 192, 0.65));
+            border-radius: 18px;
+            padding: 18px 20px 20px;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.45);
+            position: relative;
+            overflow: hidden;
+            animation: floatUp 0.8s ease-out;
+        }
+
+        .hero-panel::before {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(227,242,253,0.26), transparent 65%);
+            top: -90px;
+            right: -70px;
+            opacity: 0.85;
+        }
+
+        .hero-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: 0.04em;
+        }
+
+        .hero-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            max-width: 460px;
+        }
+
+        .hero-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .hero-metric {
+            min-width: 120px;
+            border-radius: 14px;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+        }
+
+        .hero-metric-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .hero-metric-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .hero-pill-row {
+            margin-top: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .hero-pill {
+            font-size: 11px;
+            padding: 6px 11px;
+            border-radius: 999px;
+            background: rgba(13, 71, 161, 0.88);
+            border: 1px solid rgba(144, 202, 249, 0.8);
+            color: #E3F2FD;
+        }
+
+        .summary-panel {
+            background: rgba(0, 0, 0, 0.38);
+            border-radius: 18px;
+            padding: 14px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+            animation: floatUp 0.9s ease-out;
+        }
+
+        .summary-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #BBDEFB;
+        }
+
+        .summary-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .summary-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .summary-badge {
+            font-size: 10px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            border: 1px solid rgba(144, 202, 249, 0.55);
+            color: #E3F2FD;
+        }
+
+        .grid-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 6px 2px 10px;
+        }
+
+        .grid-title {
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #BBDEFB;
+        }
+
+        .grid-hint {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .role-card {
+            position: relative;
+            border-radius: 16px;
+            padding: 14px 13px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+            cursor: pointer;
+            overflow: hidden;
+            transform: translateY(0) scale(1);
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease,
+                border-color 0.25s ease;
+            animation: fadeUp 0.6s ease-out;
+        }
+
+        .role-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top left, rgba(255,255,255,0.16), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .role-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+            background: rgba(9, 30, 66, 0.8);
+            border-color: rgba(227, 242, 253, 0.8);
+        }
+
+        .role-card:hover::before {
+            opacity: 1;
+        }
+
+        .role-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            color: #E3F2FD;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.38);
+            margin-bottom: 8px;
+        }
+
+        .role-tag-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+        }
+
+        .role-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .role-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            min-height: 32px;
+        }
+
+        .role-features {
+            list-style: none;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .role-features li {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 4px;
+        }
+
+        .role-features li span {
+            font-size: 12px;
+        }
+
+        .role-cta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .role-cta {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 7px 10px;
+            border-radius: 999px;
+            border: none;
+            color: #0D47A1;
+            background: #E3F2FD;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .role-cta-icon {
+            font-size: 14px;
+        }
+
+        .role-meta {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .role-meta span {
+            opacity: 0.9;
+        }
+
+        .footer-strip {
+            margin-top: 16px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(144, 202, 249, 0.6);
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .footer-strip span strong {
+            color: #E3F2FD;
+        }
+
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .hero-row {
+                grid-template-columns: 1fr;
+            }
+            .cards-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 720px) {
+            .page-shell {
+                padding: 18px 16px 22px;
+                border-radius: 18px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="header">
+            <div class="brand-block">
+                <div class="brand-logo">R</div>
+                <div>
+                    <div class="brand-text-main">Rickshawo</div>
+                    <div class="brand-text-sub">Smart Rickshaw Management • Prototype Hub</div>
+                </div>
+            </div>
+            <div>
+                <div class="chip-row">
+                    <div class="chip chip--accent">IDP-1 • Prototype</div>
+                    <div class="chip">Passenger · Driver · Garage · Govt</div>
+                    <div class="chip">Dhaka, Bangladesh</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="hero-row">
+            <section class="hero-panel">
+                <h1 class="hero-title">Explore the Interactive Prototypes</h1>
+                <p class="hero-subtitle">
+                    This index links all Rickshawo prototype screens: passenger app, driver dashboard,
+                    garage panel, and government monitoring. Use it to navigate quickly during demos and report presentations.
+                </p>
+
+                <div class="hero-metrics">
+                    <div class="hero-metric">
+                        <div class="hero-metric-label">User Modules</div>
+                        <div class="hero-metric-value">4 Interfaces</div>
+                    </div>
+                    <div class="hero-metric">
+                        <div class="hero-metric-label">Core Flows</div>
+                        <div class="hero-metric-value">Booking · Handover</div>
+                    </div>
+                    <div class="hero-metric">
+                        <div class="hero-metric-label">Focus</div>
+                        <div class="hero-metric-value">Safety · Compliance</div>
+                    </div>
+                </div>
+
+                <div class="hero-pill-row">
+                    <span class="hero-pill">GPS tracking</span>
+                    <span class="hero-pill">QR handover</span>
+                    <span class="hero-pill">Garage operations</span>
+                    <span class="hero-pill">Govt analytics</span>
+                </div>
+            </section>
+
+            <aside class="summary-panel">
+                <div class="summary-title">Prototype Summary</div>
+                <p class="summary-text">
+                    Each module focuses on the real workflow of a specific stakeholder. Screens are optimized
+                    for clarity, low text, and small devices to match the constraints of Dhaka's rickshaw ecosystem.
+                </p>
+                <div class="summary-badges">
+                    <span class="summary-badge">Passenger map + SOS</span>
+                    <span class="summary-badge">Driver shift + earnings</span>
+                    <span class="summary-badge">Garage QR handover</span>
+                    <span class="summary-badge">Govt violations + tax</span>
+                </div>
+            </aside>
+        </div>
+
+        <div class="grid-title-row">
+            <div class="grid-title">Choose a prototype</div>
+            <div class="grid-hint">Click any card to open the respective HTML page in a new tab.</div>
+        </div>
+
+        <main class="cards-grid">
+            <!-- Passenger -->
+            <article class="role-card" onclick="openPage('rickshawo_passenger.html')">
+                <div class="role-tag">
+                    <span class="role-tag-dot" style="background: var(--accent-passenger);"></span>
+                    <span>Passenger App</span>
+                </div>
+                <h2 class="role-title">Passenger Experience</h2>
+                <p class="role-subtitle">
+                    Map-based nearby rickshaws, quick booking, fare estimate, live trip tracking, and SOS.
+                </p>
+                <ul class="role-features">
+                    <li><span>🗺️</span><span>Home screen with live map</span></li>
+                    <li><span>📍</span><span>Pickup/drop selection and ETA</span></li>
+                    <li><span>🆘</span><span>In-trip SOS and driver details</span></li>
+                </ul>
+                <div class="role-cta-row">
+                    <a class="role-cta" href="rickshawo_passenger.html" target="_blank" rel="noopener">
+                        Open Passenger UI <span class="role-cta-icon">↗</span>
+                    </a>
+                    <div class="role-meta">
+                        <span>Best for: ride booking demos</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Driver -->
+            <article class="role-card" onclick="openPage('rickshawo_driver.html')">
+                <div class="role-tag">
+                    <span class="role-tag-dot" style="background: var(--accent-driver);"></span>
+                    <span>Driver Dashboard</span>
+                </div>
+                <h2 class="role-title">Driver Operations</h2>
+                <p class="role-subtitle">
+                    Shift status, ride requests, in-trip view with speed, and daily earnings summary.
+                </p>
+                <ul class="role-features">
+                    <li><span>📥</span><span>Incoming ride requests list</span></li>
+                    <li><span>⏱️</span><span>Shift control and in-trip status</span></li>
+                    <li><span>💰</span><span>Trips and earnings breakdown</span></li>
+                </ul>
+                <div class="role-cta-row">
+                    <a class="role-cta" href="rickshawo_driver.html" target="_blank" rel="noopener">
+                        Open Driver UI <span class="role-cta-icon">↗</span>
+                    </a>
+                    <div class="role-meta">
+                        <span>Best for: driver flow demos</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Garage -->
+            <article class="role-card" onclick="openPage('rickshawo_garage.html')">
+                <div class="role-tag">
+                    <span class="role-tag-dot" style="background: var(--accent-garage);"></span>
+                    <span>Garage Panel</span>
+                </div>
+                <h2 class="role-title">Garage Management</h2>
+                <p class="role-subtitle">
+                    QR-based handover, driver–rickshaw assignment, shift status, and maintenance logging.
+                </p>
+                <ul class="role-features">
+                    <li><span>🔁</span><span>QR shift start/end sessions</span></li>
+                    <li><span>👥</span><span>Active and pending assignments</span></li>
+                    <li><span>🔧</span><span>Maintenance log and history</span></li>
+                </ul>
+                <div class="role-cta-row">
+                    <a class="role-cta" href="rickshawo_garage.html" target="_blank" rel="noopener">
+                        Open Garage UI <span class="role-cta-icon">↗</span>
+                    </a>
+                    <div class="role-meta">
+                        <span>Best for: garage workflow demos</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Government -->
+            <article class="role-card" onclick="openPage('rickshawo_government.html')">
+                <div class="role-tag">
+                    <span class="role-tag-dot" style="background: var(--accent-govt);"></span>
+                    <span>Govt/Admin Dashboard</span>
+                </div>
+                <h2 class="role-title">Regulatory View</h2>
+                <p class="role-subtitle">
+                    Fleet overview, alerts and violations, license compliance, and tax collection statistics.
+                </p>
+                <ul class="role-features">
+                    <li><span>📊</span><span>Real-time fleet KPIs</span></li>
+                    <li><span>🚨</span><span>Speed, route, and SOS alerts</span></li>
+                    <li><span>📜</span><span>Licenses, training, tax summaries</span></li>
+                </ul>
+                <div class="role-cta-row">
+                    <a class="role-cta" href="rickshawo_government.html" target="_blank" rel="noopener">
+                        Open Govt UI <span class="role-cta-icon">↗</span>
+                    </a>
+                    <div class="role-meta">
+                        <span>Best for: compliance demos</span>
+                    </div>
+                </div>
+            </article>
+        </main>
+
+        <footer class="footer-strip">
+            <span>Rickshawo Prototype • <strong>Passenger · Driver · Garage · Government</strong></span>
+            <span>Designed for IDP-1 • Green University of Bangladesh</span>
+        </footer>
+    </div>
+
+    <script>
+        function openPage(path) {
+            window.open(path, '_blank', 'noopener');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rickshawo - Passenger App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2196F3;
+            --primary-dark: #1976D2;
+            --success: #4CAF50;
+            --danger: #F44336;
+            --warning: #FF9800;
+            --bg-light: #F5F5F5;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            border-radius: 40px;
+            border: 12px solid #000;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            background: #fff;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 28px;
+            background: #000;
+            border-radius: 0 0 30px 30px;
+            z-index: 100;
+        }
+
+        .phone-content {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding-top: 30px;
+            background: var(--bg-light);
+        }
+
+        /* Tabs Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 20px 15px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .screen {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Header */
+        .screen-header {
+            background: var(--bg-card);
+            padding: 15px;
+            margin: -20px -20px 20px -20px;
+            border-bottom: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .screen-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .screen-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Map Display */
+        .map-container {
+            width: 100%;
+            height: 280px;
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 12px;
+            border: 2px dashed var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .map-marker.user {
+            top: 60px;
+            left: 80px;
+        }
+
+        .map-marker.rickshaw {
+            top: 120px;
+            right: 60px;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .map-text {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .card-value {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-row:last-child {
+            border-bottom: none;
+        }
+
+        .card-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .card-data {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        /* Rickshaw Item */
+        .rickshaw-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rickshaw-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+        }
+
+        .rickshaw-item.selected {
+            border-color: var(--primary);
+            background: rgba(33, 150, 243, 0.05);
+        }
+
+        .rickshaw-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .rickshaw-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .rickshaw-eta {
+            background: var(--success);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .rickshaw-info {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Input and Button */
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(33, 150, 243, 0.05);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        /* SOS Button */
+        .sos-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .btn-sos {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--danger) 0%, #C62828 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+        }
+
+        .btn-sos:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(244, 67, 54, 0.4);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(76, 175, 80, 0.15);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(255, 152, 0, 0.15);
+            color: var(--warning);
+        }
+
+        .status-active {
+            background: rgba(33, 150, 243, 0.15);
+            color: var(--primary);
+        }
+
+        /* Trip Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary);
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -28px;
+            top: 2px;
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border: 3px solid var(--bg-light);
+            border-radius: 50%;
+        }
+
+        .timeline-content {
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Fare Breakdown */
+        .fare-section {
+            background: rgba(33, 150, 243, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .fare-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .fare-row:last-child {
+            margin-bottom: 0;
+            border-top: 1px solid var(--border);
+            padding-top: 8px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .fare-label {
+            color: var(--text-secondary);
+        }
+
+        .fare-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Driver Info */
+        .driver-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 15px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .driver-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .driver-details {
+            flex: 1;
+        }
+
+        .driver-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .driver-vehicle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .driver-rating {
+            font-size: 12px;
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .scrollable {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="phone-content">
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab(0)">Map</button>
+                <button class="tab-btn" onclick="switchTab(1)">Book</button>
+                <button class="tab-btn" onclick="switchTab(2)">Trip</button>
+            </div>
+
+            <!-- Screen 1: Map & Nearby Rickshaws -->
+            <div class="screen active" id="screen-0">
+                <div class="screen-header">
+                    <div class="screen-title">Find Rickshaw</div>
+                    <div class="screen-subtitle">View available rickshaws near you</div>
+                </div>
+
+                <div class="map-container">
+                    <div class="map-marker user"></div>
+                    <div class="map-marker rickshaw"></div>
+                    <div class="map-text">Live Map View</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Available Rickshaws</span>
+                        <span class="card-value">3</span>
+                    </div>
+                </div>
+
+                <div class="scrollable">
+                    <div class="rickshaw-item selected">
+                        <div class="rickshaw-header">
+                            <div class="rickshaw-name">Driver Md. Hassan</div>
+                            <div class="rickshaw-eta">2 min</div>
+                        </div>
+                        <div class="rickshaw-info">
+                            <span>📍 0.5 km away</span>
+                            <span>⭐ 4.8</span>
+                        </div>
+                    </div>
+
+                    <div class="rickshaw-item">
+                        <div class="rickshaw-header">
+                            <div class="rickshaw-name">Driver Fatima (F)</div>
+                            <div class="rickshaw-eta">4 min</div>
+                        </div>
+                        <div class="rickshaw-info">
+                            <span>📍 0.7 km away</span>
+                            <span>⭐ 4.9</span>
+                        </div>
+                    </div>
+
+                    <div class="rickshaw-item">
+                        <div class="rickshaw-header">
+                            <div class="rickshaw-name">Driver Karim</div>
+                            <div class="rickshaw-eta">5 min</div>
+                        </div>
+                        <div class="rickshaw-info">
+                            <span>📍 0.8 km away</span>
+                            <span>⭐ 4.7</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="switchTab(1)">Select & Book</button>
+            </div>
+
+            <!-- Screen 2: Booking Confirmation -->
+            <div class="screen" id="screen-1">
+                <div class="screen-header">
+                    <div class="screen-title">Confirm Booking</div>
+                    <div class="screen-subtitle">Review and confirm your ride</div>
+                </div>
+
+                <div class="driver-info">
+                    <div class="driver-avatar">MH</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Md. Hassan</div>
+                        <div class="driver-vehicle">Rickshaw • Yellow Badge</div>
+                        <div class="driver-rating">⭐ 4.8 (285 reviews)</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-row">
+                        <span class="card-label">Pickup</span>
+                        <span class="card-data">Dhanmondi, Dhaka</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Dropoff</span>
+                        <span class="card-data">Gulshan, Dhaka</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Distance</span>
+                        <span class="card-data">3.2 km</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Est. Duration</span>
+                        <span class="card-data">12 mins</span>
+                    </div>
+                </div>
+
+                <div class="fare-section">
+                    <div class="fare-row">
+                        <span class="fare-label">Base Fare</span>
+                        <span class="fare-value">৳ 50</span>
+                    </div>
+                    <div class="fare-row">
+                        <span class="fare-label">Distance (3.2 km)</span>
+                        <span class="fare-value">৳ 64</span>
+                    </div>
+                    <div class="fare-row">
+                        <span class="fare-label">Surcharge</span>
+                        <span class="fare-value">৳ 0</span>
+                    </div>
+                    <div class="fare-row">
+                        <span class="fare-label">Total Fare</span>
+                        <span class="fare-value">৳ 114</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="switchTab(2)">Confirm & Start Trip</button>
+                <button class="btn btn-secondary">Cancel</button>
+            </div>
+
+            <!-- Screen 3: Active Trip Tracking -->
+            <div class="screen" id="screen-2">
+                <div class="screen-header">
+                    <div class="screen-title">Trip in Progress</div>
+                    <span class="status-badge status-active">Active</span>
+                </div>
+
+                <div class="map-container">
+                    <div class="map-marker rickshaw"></div>
+                    <div class="map-text">Trip tracking live</div>
+                </div>
+
+                <div class="driver-info">
+                    <div class="driver-avatar">MH</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Md. Hassan</div>
+                        <div class="driver-vehicle">Rickshaw • Badge #RH-2024-5412</div>
+                        <div class="driver-rating">📞 Call Driver</div>
+                    </div>
+                </div>
+
+                <div class="sos-container">
+                    <button class="btn-sos">🚨 SOS - Emergency Alert</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-row">
+                        <span class="card-label">Speed</span>
+                        <span class="card-data">22 km/h</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Distance Left</span>
+                        <span class="card-data">1.8 km</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">ETA</span>
+                        <span class="card-data">7 mins</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Current Fare</span>
+                        <span class="card-data">৳ 78</span>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Pickup Confirmed</div>
+                            <div class="timeline-time">2 mins ago</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Trip Started</div>
+                            <div class="timeline-time">1 min ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(index) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected screen
+            document.getElementById(`screen-${index}`).classList.add('active');
+            document.querySelectorAll('.tab-btn')[index].classList.add('active');
+        }
+    </script>
+</body>
+</html>

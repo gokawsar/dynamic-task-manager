@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rickshawo - Garage Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF9800;
+            --primary-dark: #F57C00;
+            --success: #4CAF50;
+            --danger: #F44336;
+            --warning: #FBC02D;
+            --bg-light: #F5F5F5;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .panel-container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .panel-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .panel-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 20px 30px;
+            background: var(--bg-light);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .screen {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .screen-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .status-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .qr-section {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.05) 0%, rgba(245, 124, 0, 0.05) 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px dashed var(--primary);
+            text-align: center;
+        }
+
+        .qr-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .qr-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 14px 30px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 152, 0, 0.05);
+        }
+
+        .assignment-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .assignment-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 18px;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .assignment-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .assignment-item.active {
+            border-color: var(--success);
+            background: rgba(76, 175, 80, 0.05);
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .assignment-vehicle {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .assignment-status {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(255, 152, 0, 0.2);
+            color: var(--primary);
+        }
+
+        .assignment-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .assignment-row-label {
+            font-weight: 600;
+        }
+
+        .assignment-row-data {
+            color: var(--text-primary);
+        }
+
+        .maintenance-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .maintenance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .maintenance-vehicle {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .maintenance-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .maintenance-list {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .textarea-field {
+            grid-column: 1 / -1;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: inherit;
+            min-height: 100px;
+            resize: none;
+        }
+
+        .form-row {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: var(--bg-light);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+        }
+
+        .badge-pending {
+            background: rgba(255, 152, 0, 0.2);
+            color: var(--primary);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="panel-container">
+        <!-- Header -->
+        <div class="panel-header">
+            <div class="panel-title">Rickshawo Garage Management</div>
+            <div class="panel-subtitle">Daily Operations & Fleet Management</div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">QR Handover</button>
+            <button class="tab-btn" onclick="switchTab(1)">Assignments</button>
+            <button class="tab-btn" onclick="switchTab(2)">Maintenance</button>
+        </div>
+
+        <!-- Screen 1: QR Handover -->
+        <div class="screen active" id="screen-0">
+            <div class="screen-title">Shift Handover via QR</div>
+
+            <div class="status-overview">
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Active Shifts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">Total Rickshaws</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+
+            <div class="qr-section">
+                <div class="qr-icon">📱</div>
+                <div class="qr-text">Driver scans QR code to start/end shift</div>
+                <button class="btn btn-primary">Start New Handover Session</button>
+            </div>
+
+            <div style="background: var(--bg-light); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px; font-size: 14px; color: var(--text-primary);">Latest Handover Records</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Driver Name</th>
+                            <th>Vehicle</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Md. Hassan</td>
+                            <td>RH-2024-5412</td>
+                            <td>06:00 AM</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Fatima Akhter</td>
+                            <td>RH-2024-5413</td>
+                            <td>06:15 AM</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Karim Ahmed</td>
+                            <td>RH-2024-5414</td>
+                            <td>06:30 AM</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Screen 2: Assignments -->
+        <div class="screen" id="screen-1">
+            <div class="screen-title">Driver-Rickshaw Assignments</div>
+
+            <div class="assignment-list">
+                <div class="assignment-item active">
+                    <div class="assignment-header">
+                        <div class="assignment-vehicle">Md. Hassan → RH-2024-5412</div>
+                        <span class="assignment-status status-active">Active</span>
+                    </div>
+                    <div class="assignment-row">
+                        <span class="assignment-row-label">Shift Start:</span>
+                        <span class="assignment-row-data">06:00 AM</span>
+                    </div>
+                    <div class="assignment-row">
+                        <span class="assignment-row-label">Trips Today:</span>
+                        <span class="assignment-row-data">12</span>
+                    </div>
+                    <div class="assignment-row">
+                        <span class="assignment-row-label">Current Location:</span>
+                        <span class="assignment-row-data">📍 Dhanmondi</span>
+                    </div>
+                    <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;">View Details</button>
+                </div>
+
+                <div class="assignment-item active">
+                    <div class="assignment-header">
+                        <div class="assignment-vehicle">Fatima Akhter (F) → RH-2024-5413</div>
+                        <span class="assignment-status status-active">Active</span>
+                    </div>
+                    <div class="assignment-row">
+                        <span class="assignment-row-label">Shift Start:</span>
+                        <span class="assignment-row-data">06:15 AM</span>
+                    </div>
+                    <div class="assignment-row">
+                        <span class="assignment-row-label">Trips Today:</span>
+                        <span class="assignment-row-data">10</span>
+                    </div>
+                    <div class="assignment-row">
+                        <span class="assignment-row-label">Current Location:</span>
+                        <span class="assignment-row-data">📍 Gulshan</span>
+                    </div>
+                    <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;">View Details</button>
+                </div>
+
+                <div class="assignment-item">
+                    <div class="assignment-header">
+                        <div class="assignment-vehicle">Karim Ahmed → RH-2024-5414</div>
+                        <span class="assignment-status status-pending">Pending</span>
+                    </div>
+                    <div class="assignment-row">
+                        <span class="assignment-row-label">Scheduled Start:</span>
+                        <span class="assignment-row-data">06:30 AM</span>
+                    </div>
+                    <div class="assignment-row">
+                        <span class="assignment-row-label">Status:</span>
+                        <span class="assignment-row-data">Awaiting handover QR scan</span>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;">Send QR Code</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Maintenance -->
+        <div class="screen" id="screen-2">
+            <div class="screen-title">Maintenance & Logs</div>
+
+            <div style="margin-bottom: 30px; background: var(--bg-light); padding: 20px; border-radius: 12px;">
+                <h3 style="margin-bottom: 15px; font-size: 14px; color: var(--text-primary);">Log New Maintenance</h3>
+                <div class="form-row">
+                    <label class="form-label">Vehicle ID</label>
+                    <select class="input-field">
+                        <option>RH-2024-5412 (Md. Hassan)</option>
+                        <option>RH-2024-5413 (Fatima)</option>
+                        <option>RH-2024-5414 (Karim)</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Maintenance Type</label>
+                    <select class="input-field">
+                        <option>Oil Change</option>
+                        <option>Tire Repair</option>
+                        <option>Brake Service</option>
+                        <option>General Inspection</option>
+                        <option>Cleaning</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Description</label>
+                    <textarea class="textarea-field" placeholder="Enter maintenance details..."></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary">Log Maintenance</button>
+                    <button class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 15px; font-size: 14px; color: var(--text-primary);">Maintenance History</h3>
+
+            <div class="maintenance-item">
+                <div class="maintenance-header">
+                    <div>
+                        <div class="maintenance-vehicle">RH-2024-5412 (Md. Hassan)</div>
+                        <div class="maintenance-date">Today • 08:30 AM</div>
+                    </div>
+                </div>
+                <div class="maintenance-list">
+                    <strong>Oil Change</strong><br>
+                    Routine 500 km oil change completed. Engine condition good.
+                </div>
+            </div>
+
+            <div class="maintenance-item">
+                <div class="maintenance-header">
+                    <div>
+                        <div class="maintenance-vehicle">RH-2024-5413 (Fatima Akhter)</div>
+                        <div class="maintenance-date">Yesterday • 06:45 PM</div>
+                    </div>
+                </div>
+                <div class="maintenance-list">
+                    <strong>Tire Repair</strong><br>
+                    Fixed puncture on rear tire. Spare tire installed.
+                </div>
+            </div>
+
+            <div class="maintenance-item">
+                <div class="maintenance-header">
+                    <div>
+                        <div class="maintenance-vehicle">RH-2024-5414 (Karim Ahmed)</div>
+                        <div class="maintenance-date">2 days ago • 10:00 AM</div>
+                    </div>
+                </div>
+                <div class="maintenance-list">
+                    <strong>General Inspection</strong><br>
+                    Monthly inspection passed. All systems operational.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(index) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(`screen-${index}`).classList.add('active');
+            document.querySelectorAll('.tab-btn')[index].classList.add('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rickshawo - Government Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1565C0;
+            --primary-dark: #0D47A1;
+            --success: #4CAF50;
+            --danger: #F44336;
+            --warning: #FF9800;
+            --bg-light: #F5F5F5;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-title {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-header {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-header:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .header-info {
+            display: flex;
+            gap: 30px;
+            font-size: 14px;
+        }
+
+        .info-item {
+            opacity: 0.9;
+        }
+
+        .info-label {
+            font-size: 12px;
+            opacity: 0.8;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            bottom: -17px;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .screen-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 25px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .metric-change {
+            font-size: 12px;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .chart-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .chart-placeholder {
+            height: 250px;
+            background: linear-gradient(135deg, rgba(21, 101, 192, 0.05) 0%, rgba(13, 71, 161, 0.05) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .violations-table {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--bg-light);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        .vehicle-id {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(76, 175, 80, 0.15);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(255, 152, 0, 0.15);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(244, 67, 54, 0.15);
+            color: var(--danger);
+        }
+
+        .alert-box {
+            background: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid var(--danger);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: var(--danger);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .alert-items {
+            display: grid;
+            gap: 10px;
+        }
+
+        .alert-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid var(--danger);
+        }
+
+        .alert-vehicle {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .alert-detail {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .tax-summary {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .tax-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .tax-row:last-child {
+            border-bottom: none;
+        }
+
+        .tax-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .tax-value {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .status-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid var(--border);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .status-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .status-count {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        @media (max-width: 1024px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="dashboard-title">🏛️ Government Dashboard</div>
+                <div class="header-actions">
+                    <button class="btn-header">Export Report</button>
+                    <button class="btn-header">Real-time Alerts</button>
+                </div>
+            </div>
+            <div class="header-info">
+                <div class="info-item">
+                    <span class="info-label">Active Rickshaws</span>
+                    <span class="info-value">847</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Daily Revenue</span>
+                    <span class="info-value">৳ 125,420</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Tax Collected Today</span>
+                    <span class="info-value">৳ 18,813</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Fleet Overview</button>
+            <button class="tab-btn" onclick="switchTab(1)">Alerts & Violations</button>
+            <button class="tab-btn" onclick="switchTab(2)">Compliance</button>
+            <button class="tab-btn" onclick="switchTab(3)">Tax & Revenue</button>
+        </div>
+
+        <!-- Screen 1: Fleet Overview -->
+        <div class="screen active" id="screen-0">
+            <div class="screen-title">Fleet Monitoring Dashboard</div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Total Licensed Vehicles</div>
+                    <div class="metric-value">847</div>
+                    <div class="metric-change">↑ 12 new this month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Currently Active</div>
+                    <div class="metric-value">756</div>
+                    <div class="metric-change">89% utilization</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Today's Rides</div>
+                    <div class="metric-value">3,247</div>
+                    <div class="metric-change">↑ 8% vs yesterday</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Avg. Rating</div>
+                    <div class="metric-value">4.7/5</div>
+                    <div class="metric-change">↑ 0.1 points</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Real-time Fleet Status Map</div>
+                <div class="chart-placeholder">📍 Live GPS tracking of all 756 active vehicles</div>
+            </div>
+
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-header">
+                        <div class="status-title">Vehicles by Zone</div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.8;">
+                        <div>Dhaka Central: 234 🟢</div>
+                        <div>Gulshan-Banani: 156 🟢</div>
+                        <div>Dhanmondi: 189 🟢</div>
+                        <div>Mirpur: 142 🟡</div>
+                        <div>Others: 35 🔴</div>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-header">
+                        <div class="status-title">Fleet Health</div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.8;">
+                        <div>✓ All Documents Valid: 834 (98.5%)</div>
+                        <div>⚠ Renewal Due (30 days): 13 (1.5%)</div>
+                        <div>🚫 License Expired: 0</div>
+                        <div>🔧 Under Maintenance: 91</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: Alerts & Violations -->
+        <div class="screen" id="screen-1">
+            <div class="screen-title">Real-Time Alerts & Violations</div>
+
+            <div class="alert-box">
+                <div class="alert-title">🚨 CRITICAL ALERTS (3)</div>
+                <div class="alert-items">
+                    <div class="alert-item">
+                        <div class="alert-vehicle">RH-2024-8901 - Unlicensed Vehicle</div>
+                        <div class="alert-detail">No valid license found in BRTA database • Location: Mirpur • Action: Immediate inspection required</div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-vehicle">RH-2024-4456 - Speed Violation</div>
+                        <div class="alert-detail">Exceeded 45 km/h in residential zone • Driver: Karim Ahmed • Location: Banani Road • Fine: ৳ 2,000</div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-vehicle">RH-2024-7732 - Mechanical Failure</div>
+                        <div class="alert-detail">Critical brake system warning detected • Location: Dhanmondi • Action: Vehicle removed from service</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="violations-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vehicle ID</th>
+                            <th>Violation Type</th>
+                            <th>Date/Time</th>
+                            <th>Fine</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="vehicle-id">RH-2024-5412</td>
+                            <td>Speed Violation (48 km/h)</td>
+                            <td>Today • 09:45 AM</td>
+                            <td>৳ 2,000</td>
+                            <td><span class="badge badge-warning">Pending Review</span></td>
+                        </tr>
+                        <tr>
+                            <td class="vehicle-id">RH-2024-6234</td>
+                            <td>Route Deviation</td>
+                            <td>Today • 08:20 AM</td>
+                            <td>৳ 1,500</td>
+                            <td><span class="badge badge-danger">Contested</span></td>
+                        </tr>
+                        <tr>
+                            <td class="vehicle-id">RH-2024-7890</td>
+                            <td>SOS Emergency Triggered</td>
+                            <td>Yesterday • 06:30 PM</td>
+                            <td>-</td>
+                            <td><span class="badge badge-success">Investigated</span></td>
+                        </tr>
+                        <tr>
+                            <td class="vehicle-id">RH-2024-4521</td>
+                            <td>Missing Permit Update</td>
+                            <td>2 days ago</td>
+                            <td>-</td>
+                            <td><span class="badge badge-success">Resolved</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Screen 3: Compliance -->
+        <div class="screen" id="screen-2">
+            <div class="screen-title">License & Training Compliance</div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Valid Licenses</div>
+                    <div class="metric-value">834</div>
+                    <div class="metric-change">98.5% compliant</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Drivers Trained (2024)</div>
+                    <div class="metric-value">712</div>
+                    <div class="metric-change">84% completion</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Safety Cert. Current</div>
+                    <div class="metric-value">801</div>
+                    <div class="metric-change">94.6% coverage</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Renewals Due (30d)</div>
+                    <div class="metric-value">13</div>
+                    <div class="metric-change">1.5% needs action</div>
+                </div>
+            </div>
+
+            <div class="violations-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Driver Name</th>
+                            <th>License Expiry</th>
+                            <th>Training Status</th>
+                            <th>Last Check</th>
+                            <th>Action Required</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="vehicle-id">Md. Hassan</td>
+                            <td>2025-12-15</td>
+                            <td><span class="badge badge-success">Valid</span></td>
+                            <td>Today</td>
+                            <td>None</td>
+                        </tr>
+                        <tr>
+                            <td class="vehicle-id">Fatima Akhter</td>
+                            <td>2025-06-20</td>
+                            <td><span class="badge badge-success">Valid</span></td>
+                            <td>Today</td>
+                            <td>None</td>
+                        </tr>
+                        <tr>
+                            <td class="vehicle-id">Karim Ahmed</td>
+                            <td>2025-01-10</td>
+                            <td><span class="badge badge-warning">Needs Renewal</span></td>
+                            <td>3 days ago</td>
+                            <td><strong style="color: var(--warning);">Notify Driver</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="vehicle-id">Noor Hasan</td>
+                            <td>2024-12-25</td>
+                            <td><span class="badge badge-danger">Expired</span></td>
+                            <td>5 days ago</td>
+                            <td><strong style="color: var(--danger);">Suspend License</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Screen 4: Tax & Revenue -->
+        <div class="screen" id="screen-3">
+            <div class="screen-title">Tax Collection & Revenue Report</div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Daily Revenue</div>
+                    <div class="metric-value">৳ 125.4K</div>
+                    <div class="metric-change">↑ 8% vs avg</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Tax Collected (15%)</div>
+                    <div class="metric-value">৳ 18.8K</div>
+                    <div class="metric-change">↑ 15% this week</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Avg. Fare per Ride</div>
+                    <div class="metric-value">৳ 87.5</div>
+                    <div class="metric-change">Stable</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Monthly Projection</div>
+                    <div class="metric-value">৳ 564.3K</div>
+                    <div class="metric-change">15% growth</div>
+                </div>
+            </div>
+
+            <div class="tax-summary">
+                <h3 style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 15px;">Today's Tax Breakdown</h3>
+                <div class="tax-row">
+                    <span class="tax-label">Total Rides</span>
+                    <span class="tax-value">3,247 rides</span>
+                </div>
+                <div class="tax-row">
+                    <span class="tax-label">Gross Fare Collection</span>
+                    <span class="tax-value">৳ 125,420</span>
+                </div>
+                <div class="tax-row">
+                    <span class="tax-label">Government Tax (15%)</span>
+                    <span class="tax-value">৳ 18,813</span>
+                </div>
+                <div class="tax-row">
+                    <span class="tax-label">Driver Earnings (85%)</span>
+                    <span class="tax-value">৳ 106,607</span>
+                </div>
+                <div class="tax-row">
+                    <span class="tax-label">Escrow (Pending)</span>
+                    <span class="tax-value">৳ 2,450</span>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Tax Collection Trend (Last 7 Days)</div>
+                <div class="chart-placeholder">📊 Daily tax collection and revenue trend visualization</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(index) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(`screen-${index}`).classList.add('active');
+            document.querySelectorAll('.tab-btn')[index].classList.add('active');
+        }
+    </script>
+</body>
+</html>
